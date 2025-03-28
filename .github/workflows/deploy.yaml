@@ -31,10 +31,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-node-modules
+          restore-keys: |
+            ${{ runner.os }}-node-modules
+          if: changedFiles('deno.lock')
+
       - name: Setup Deno
         uses: denolib/setup-deno@v2
         with:
           deno-version: v2.x
+
+      - name: Install dependencies
+        run: deno install
 
       - name: Build
         run: deno task build
